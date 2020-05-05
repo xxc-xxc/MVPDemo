@@ -55,9 +55,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.7.1'
     //okhttp3
     implementation 'com.squareup.okhttp3:okhttp:3.14.7'
-    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.6.0'
+//    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
     //Material-dialogs
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     //jetbrains 注解
     implementation 'org.jetbrains:annotations-java5:15.0'
+    //cookie管理
+    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
 }

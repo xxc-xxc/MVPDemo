@@ -26,14 +26,27 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeEmitter;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeOnSubscribe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -270,7 +283,7 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
 
         // 非自己创建的Flowable使用背压策略：
         // interval操作符发送Long类型的事件，从0开始，每隔指定时间把数字+1并发送出来
-        Flowable.interval(1, TimeUnit.MILLISECONDS)
+        /*Flowable.interval(1, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Long>() {
                     @Override
@@ -292,7 +305,7 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
                     public void onComplete() {
 
                     }
-                });
+                });*/
 
         /*Flowable.create(new FlowableOnSubscribe<Integer>() {
             @Override
@@ -350,6 +363,244 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
 
                     @Override
                     public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });*/
+
+        // 6.事件处理能力
+        // (1)同步
+        /*Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                Log.d(TAG, "当前处理能力：" + emitter.requested());
+            }
+        }, BackpressureStrategy.ERROR)
+                .subscribe(new Subscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        s.request(1);
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });*/
+
+        // (2)异步
+        /*Flowable.create(new FlowableOnSubscribe<Integer>() {
+                    @Override
+                    public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                        Log.d(TAG, "current requested: " + emitter.requested());
+                    }
+                }, BackpressureStrategy.ERROR)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        Log.d(TAG, "onSubscribe");
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        Log.d(TAG, "onNext: " + integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.w(TAG, "onError: ", t);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete");
+                    }
+                });*/
+
+        // 6.使用RxJavaPlugins做前置处理&后置处理
+        /*Maybe.just(1)
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        Log.d(TAG, "real onSuccess");
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "real onError");
+                    }
+                });*/
+
+        // 1.Observable
+        /*Disposable disposable = Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                Log.d(TAG, "开始发送数据");
+                emitter.onNext(1);
+                emitter.onNext(2);
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                // 订阅方法一
+                .subscribe(new Observer<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+                // 订阅方法二
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+
+                    }
+                });*/
+
+        // 2.Flowable
+        /*Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                Log.d(TAG, "开始发送数据");
+                for (int i = 0; i < 100; i++) {
+                    emitter.onNext(i);
+                }
+                emitter.onComplete();
+            }
+        }, BackpressureStrategy.DROP)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new FlowableSubscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        Log.d(TAG, "onSubscribe: ");
+                        // 告诉上游（被观察者）下游（观察者）处理事件的能力
+                        s.request(100);
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });*/
+
+        // 3.Single
+        /*Single.create(new SingleOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(SingleEmitter<Integer> emitter) throws Exception {
+                Log.d(TAG, "subscribe: ");
+                emitter.onSuccess(1);
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d(TAG, "onSubscribe: ");
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });*/
+
+        // 4.Completable
+        /*Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter emitter) throws Exception {
+                Log.d(TAG, "subscribe: ");
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });*/
+
+        // 5.Maybe
+        /*Maybe.create(new MaybeOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(MaybeEmitter<Integer> emitter) throws Exception {
+                Log.d(TAG, "subscribe: ");
+                emitter.onSuccess(1);
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new MaybeObserver<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
 
                     }
 
