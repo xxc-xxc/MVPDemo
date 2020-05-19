@@ -13,7 +13,7 @@ public class BasePresenter<V extends BaseView> {
     }
 
     /**
-     * 解除绑定view，一般在onDestory中调用
+     * 解除绑定view，一般在onDestroy中调用
      */
     public void detachView() {
         this.view = null;

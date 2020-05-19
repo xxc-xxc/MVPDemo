@@ -5,16 +5,13 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 
-import com.example.xxc.mvpdemo.base.BaseActivity;
-import com.example.xxc.mvpdemo.base.BasePresenter;
-import com.example.xxc.mvpdemo.base.BaseView;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.AutoDisposeConverter;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
-public abstract class BaseMvpActivity<T extends BasePresenter> extends BaseActivity implements BaseView {
+public abstract class BaseMvpActivity<P extends BasePresenter> extends BaseActivity implements BaseView {
 
-    protected T mPresenter;
+    protected P mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,10 +20,10 @@ public abstract class BaseMvpActivity<T extends BasePresenter> extends BaseActiv
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         if (mPresenter != null) {
             mPresenter.detachView();
         }
-        super.onDestroy();
     }
 
     /**
