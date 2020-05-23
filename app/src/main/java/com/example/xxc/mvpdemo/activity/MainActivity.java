@@ -1,7 +1,11 @@
 package com.example.xxc.mvpdemo.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
@@ -12,6 +16,8 @@ import com.example.xxc.mvpdemo.bean.BaseObjectBean;
 import com.example.xxc.mvpdemo.bean.UserBean;
 import com.example.xxc.mvpdemo.contract.MainContract;
 import com.example.xxc.mvpdemo.presenter.MainPresenter;
+import com.example.xxc.mvpdemo.service.BindImmediateService;
+import com.example.xxc.mvpdemo.service.NormalService;
 import com.example.xxc.mvpdemo.util.ProgressDialog;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -661,10 +667,55 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
 
     @OnClick(R.id.btn_signin_login)
     public void onViewClicked() {
-        if (getUsername().isEmpty() || getPassword().isEmpty()) {
+        /*if (getUsername().isEmpty() || getPassword().isEmpty()) {
             Toast.makeText(this, "帐号密码不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-        mPresenter.login(getUsername(), getPassword());
+        mPresenter.login(getUsername(), getPassword());*/
+
+        // 1.启动一个普通服务
+//        Intent intent = new Intent(this, NormalService.class);
+//        startService(intent);
+
+        // 2.立即绑定服务
+//        Intent intent = new Intent(this, BindImmediateService.class);
+//        boolean bindFlag = bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+        // 解绑服务 如果是立即绑定，解绑后自动停止服务
+//        unbindService(connection);
+//        immediateService = null;
+
+        // 3.延迟绑定服务
+        Intent intent = new Intent(this, BindImmediateService.class);
+        startService(intent); // onCreate() ==> onStartCommand()
+        // 绑定服务，如果服务未启动，则先启动服务再绑定
+        bindService(intent, connection, Context.BIND_AUTO_CREATE); // onBind()
+
+        // 解绑服务
+        unbindService(connection); // onUnbind()
+
+        // 重新绑定服务，前提是onUnbind() 返回true(允许再次绑定)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE); // onRebind()
+
+        // 停止服务
+        stopService(intent); // onDestroy()
     }
+
+    // 声明一个服务对象
+    private BindImmediateService immediateService;
+    // 创建服务连接对象
+    private ServiceConnection connection = new ServiceConnection() {
+
+        // 获取服务对象
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            immediateService = ((BindImmediateService.LocalBinder)iBinder).getService();
+        }
+
+        // 与服务断开连接时，将服务对象置为null
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            immediateService = null;
+        }
+    };
 }
