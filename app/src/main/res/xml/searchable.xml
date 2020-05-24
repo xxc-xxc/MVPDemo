@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+    android:label="@string/app_name"
+    android:hint="请输入搜索内容"
+    android:inputType="text"
+    android:searchButtonText="@string/app_name">
+    <!--定义搜索框的样式-->
+
+</searchable>

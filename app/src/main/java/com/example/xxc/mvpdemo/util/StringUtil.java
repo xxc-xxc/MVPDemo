@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * @ClassName: StringsUtil
  * @Model : (所属模块名称)
- * @Description: (这里用一句话描述这个类的作用)
+ * @Description: 字符串操作工具类
  */
 public class StringUtil {
 
@@ -24,41 +24,41 @@ public class StringUtil {
      * @return String
      */
     public static String getRealStr(String str, int maxLength) {
-        String rlt = StringUtil.UNKNOWN;
+        String defStr = StringUtil.UNKNOWN;
         if (null != str && maxLength > 0) {
             if (str.length() < maxLength) {
-                rlt = str;
+                defStr = str;
             } else {
-                rlt = str.substring(0, maxLength);
+                defStr = str.substring(0, maxLength);
             }
         }
-        return rlt;
+        return defStr;
     }
 
     /**
-     * @param strObj 字符串
+     * @param str 字符串
      * @return boolean true:表示字串为null或者字串为空串,false表示字串不为空
      * @Title: isStringEmpty
      * @Description: 判断字符串是否为空
      */
-    public static boolean isStringEmpty(String strObj) {
-        return (null == strObj || strObj.trim().length() == 0);
+    public static boolean isStringEmpty(String str) {
+        return (null == str || str.trim().length() == 0);
     }
 
     /**
-     * @param strObj 字符串
+     * @param str 字符串
      * @return boolean true:表示字串有效,false表示字串为空或者未知
      * @Title: isValidate
      * @Description: 判断字符串是否有效
      */
-    public static boolean isValidate(String strObj) {
-        return (!StringUtil.isStringEmpty(strObj) && !UNKNOWN.equalsIgnoreCase(strObj.trim()));
+    public static boolean isValidate(String str) {
+        return (!StringUtil.isStringEmpty(str) && !UNKNOWN.equalsIgnoreCase(str.trim()));
     }
 
-    public static boolean isValidates(String... strObjs) {
-        if (null != strObjs && strObjs.length > 0) {
-            for (int i = 0; i < strObjs.length; i++) {
-                if (StringUtil.isStringEmpty(strObjs[i])) {
+    public static boolean isValidates(String... strings) {
+        if (null != strings && strings.length > 0) {
+            for (int i = 0; i < strings.length; i++) {
+                if (StringUtil.isStringEmpty(strings[i])) {
                     return false;
                 }
             }
@@ -107,26 +107,26 @@ public class StringUtil {
      * @Description: 将字串转为指定编码格式的字节流
      */
     public static byte[] getBytes(String str, String charset) {
-        byte[] rlt = new byte[0];
+        byte[] bytes = new byte[0];
 
         if (StringUtil.isStringEmpty(str) || StringUtil.isStringEmpty(charset)) {
-            return rlt;
+            return bytes;
         }
 
         try {
-            rlt = str.getBytes(charset);
+            bytes = str.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        return rlt;
+        return bytes;
     }
 
-    public static String[] getUrl(String[] url_dee, String url_sec) {
-        String[] url = new String[url_dee.length];
-        if (null != url_dee && url_dee.length > 0 && isValidate(url_sec)) {
-            for (int i = 0; i < url_dee.length; i++) {
-                url[i] = url_dee[i] + url_sec;
+    public static String[] getUrl(String[] urlDee, String urlSec) {
+        String[] url = new String[urlDee.length];
+        if (null != urlDee && urlDee.length > 0 && isValidate(urlSec)) {
+            for (int i = 0; i < urlDee.length; i++) {
+                url[i] = urlDee[i] + urlSec;
             }
             return url;
         }
@@ -152,8 +152,9 @@ public class StringUtil {
     }
 
     public static String cutStr(String targetStr, String positionStr) {
-        String rltStr = targetStr == null || !targetStr.contains(positionStr) ? null : targetStr.substring(targetStr.indexOf(positionStr) + positionStr.length()).trim();
-        return rltStr;
+        return targetStr == null || !targetStr.contains(positionStr) ? null : targetStr.substring(targetStr.indexOf(positionStr) + positionStr.length()).trim();
     }
+
+
 
 }

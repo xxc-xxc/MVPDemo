@@ -60,7 +60,7 @@ dependencies {
     //Material-dialogs
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     //jetbrains 注解
-    implementation 'org.jetbrains:annotations-java5:15.0'
+//    implementation 'org.jetbrains:annotations-java5:15.0'
     //cookie管理
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
 }

@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.TrafficStats;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -615,6 +616,32 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
 
                     }
                 });*/
+        // 获取接收流量的总字节数，包含Mobile和WiFi
+        long totalRxBytes = TrafficStats.getTotalRxBytes();
+        // 获取发送流量的总字节数，包含Mobile和WiFi
+        long totalTxBytes = TrafficStats.getTotalTxBytes();
+        // 获取接收的总数据包数，包含Mobile和WiFi
+        long totalRxPackets = TrafficStats.getTotalRxPackets();
+        // 获取发送的总数据包数，包含Mobile和WiFi
+        long totalTxPackets = TrafficStats.getTotalTxPackets();
+
+        // 获取Mobile连接接收的总字节数，包含Mobile，不包含WiFi
+        long mobileRxBytes = TrafficStats.getMobileRxBytes();
+        // 获取Mobile发送的字节总数，包含Mobile，不包含WiFi
+        long mobileTxBytes = TrafficStats.getMobileTxBytes();
+        // 获取Mobile接收的数据包总数，包含Mobile，不包含WiFi
+        long mobileRxPackets = TrafficStats.getMobileRxPackets();
+        // 获取Mobile发送的数据包总数，包含Mobile，不包含WiFi
+        long mobileTxPackets = TrafficStats.getMobileTxPackets();
+
+        // 获取指定进程接收流量的总字节数
+        long uidRxBytes = TrafficStats.getUidRxBytes(0);
+        // 获取指定进程发送流量的总字节数
+        long uidTxBytes = TrafficStats.getUidTxBytes(0);
+        // 获取指定进程接收流量的总数据包数
+        long uidRxPackets = TrafficStats.getUidRxPackets(0);
+        // 获取指定进程发送流量的总数据包数
+        long uidTxPackets = TrafficStats.getUidTxPackets(0);
 
     }
 
@@ -686,19 +713,20 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
 //        immediateService = null;
 
         // 3.延迟绑定服务
-        Intent intent = new Intent(this, BindImmediateService.class);
-        startService(intent); // onCreate() ==> onStartCommand()
+//        Intent intent = new Intent(this, BindImmediateService.class);
+//        startService(intent); // onCreate() ==> onStartCommand()
         // 绑定服务，如果服务未启动，则先启动服务再绑定
-        bindService(intent, connection, Context.BIND_AUTO_CREATE); // onBind()
+//        bindService(intent, connection, Context.BIND_AUTO_CREATE); // onBind()
 
         // 解绑服务
-        unbindService(connection); // onUnbind()
+//        unbindService(connection); // onUnbind()
 
         // 重新绑定服务，前提是onUnbind() 返回true(允许再次绑定)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE); // onRebind()
+//        bindService(intent, connection, Context.BIND_AUTO_CREATE); // onRebind()
 
         // 停止服务
-        stopService(intent); // onDestroy()
+//        stopService(intent); // onDestroy()
+        startActivity(new Intent(this, ToolbarActivity.class));
     }
 
     // 声明一个服务对象
@@ -718,4 +746,6 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
             immediateService = null;
         }
     };
+
+
 }
